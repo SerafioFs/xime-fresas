@@ -2,7 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Xime-Fresas"/>
 <title>🍓 Xime-Fresas</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
@@ -41,14 +44,12 @@
   #mobile-menu{display:none;background:rgba(255,220,235,0.98);border-top:1px solid var(--border);padding:8px 16px 16px}
   .mob-nav-btn{display:block;width:100%;text-align:left;padding:14px 16px;background:transparent;border:none;border-radius:12px;font-weight:700;font-size:15px;color:var(--dark);margin-bottom:4px}
   .mob-nav-btn.active{background:var(--acc);color:#fff}
-  main{max-width:1100px;width:100%;margin:0 auto;padding:20px 20px 70px}
-  .tab{display:none}
-  .tab.active{display:block}
-  footer-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(255,220,235,0.97);border-top:1px solid var(--border);z-index:200;backdrop-filter:blur(10px)}
+  main{max-width:1100px;width:100%;margin:0 auto;padding:20px 20px 90px}
+  .tab{display:none}.tab.active{display:block}
+  footer-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(255,220,235,0.97);border-top:1px solid var(--border);z-index:200;backdrop-filter:blur(10px);padding-bottom:env(safe-area-inset-bottom)}
   .bot-nav{display:flex}
   .bot-btn{flex:1;border:none;background:none;padding:10px 4px 12px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
-  .bot-icon{font-size:22px}
-  .bot-lbl{font-size:10px;font-weight:700;color:var(--soft)}
+  .bot-icon{font-size:22px}.bot-lbl{font-size:10px;font-weight:700;color:var(--soft)}
   .bot-btn.active .bot-lbl{color:var(--acc)}
   .bot-dot{width:20px;height:3px;background:var(--acc);border-radius:99px;display:none}
   .bot-btn.active .bot-dot{display:block}
@@ -61,6 +62,11 @@
   .login-box{background:var(--card);backdrop-filter:blur(8px);border-radius:16px;padding:40px 28px;border:1px solid var(--border);max-width:400px;width:100%;text-align:center}
   .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
   .ovx{overflow-x:auto}
+  /* Sync status */
+  #sync-bar{font-size:12px;padding:4px 12px;border-radius:99px;display:inline-flex;align-items:center;gap:5px;margin-left:8px}
+  .sync-ok{background:rgba(34,197,94,0.15);color:#15803d}
+  .sync-err{background:rgba(239,68,68,0.15);color:#b91c1c}
+  .sync-ing{background:rgba(251,191,36,0.15);color:#92400e}
   @media(max-width:700px){
     .grid4{grid-template-columns:1fr 1fr}
     .grid2{grid-template-columns:1fr}
@@ -79,10 +85,10 @@
   <div class="login-box">
     <div style="font-size:52px;margin-bottom:8px">🍓</div>
     <div style="font-weight:900;font-size:24px;font-family:Georgia,serif;margin-bottom:6px">Xime-Fresas</div>
-    <div style="color:var(--mid);font-size:14px;margin-bottom:20px">¿Cómo te llamas? Tu nombre aparecerá en el registro.</div>
+    <div style="color:var(--mid);font-size:14px;margin-bottom:20px">¿Cómo te llamas?</div>
     <input id="name-input" placeholder="Tu nombre…" style="text-align:center;margin-bottom:12px;font-size:16px" onkeydown="if(event.key==='Enter')doLogin()"/>
     <button class="btn-p" style="width:100%;padding:14px 0;font-size:16px" onclick="doLogin()">Entrar 🍓</button>
-    <div style="color:var(--soft);font-size:11px;margin-top:14px">Los datos se guardan localmente en este navegador.</div>
+    <div style="color:var(--soft);font-size:11px;margin-top:14px">Datos compartidos en la nube · respaldo local automático</div>
   </div>
 </div>
 
@@ -90,11 +96,14 @@
 <div id="app" style="display:none">
   <header>
     <div class="hinner">
-      <div style="display:flex;align-items:center;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
         <span style="font-size:28px">🍓</span>
         <div>
           <div class="logo-name">Xime-Fresas</div>
-          <div class="logo-sub">Usuario: <strong id="hdr-user" style="color:var(--acc)"></strong></div>
+          <div class="logo-sub" style="display:flex;align-items:center;flex-wrap:wrap">
+            <span>👤 <strong id="hdr-user" style="color:var(--acc)"></strong></span>
+            <span id="sync-bar" class="sync-ing">⏳ Conectando…</span>
+          </div>
         </div>
       </div>
       <nav class="desk-nav" id="desk-nav"></nav>
@@ -125,7 +134,7 @@
       </div>
       <div class="card">
         <div class="card-title" id="mat-list-title">📋 Materiales (0)</div>
-        <div id="mat-list"><div class="empty">Sin materiales. Agrega tu primera materia prima 🍓</div></div>
+        <div id="mat-list"><div class="empty">Cargando… 🍓</div></div>
       </div>
       <div id="mat-stats" class="stats-row" style="display:none"></div>
     </div>
@@ -156,7 +165,7 @@
       </div>
       <div class="card">
         <div class="card-title" id="prod-list-title">🍓 Productos (0)</div>
-        <div id="prod-list"><div class="empty">Sin productos. Crea tu primer producto 🍓</div></div>
+        <div id="prod-list"><div class="empty">Cargando… 🍓</div></div>
       </div>
     </div>
 
@@ -182,7 +191,7 @@
       <h2>📋 Registro de Cambios</h2>
       <div class="card">
         <div class="card-title" id="log-title">Historial (0 eventos)</div>
-        <div id="log-list"><div class="empty">Sin actividad registrada todavía 🍓</div></div>
+        <div id="log-list"><div class="empty">Cargando… 🍓</div></div>
       </div>
     </div>
   </main>
@@ -193,114 +202,169 @@
 </div>
 
 <script>
-// ── State ──────────────────────────────────────────────────────
-let username = '', materials = [], products = [], log = [], matEditing = null, prodEditing = null, prodIngredients = [], currentTab = 'inventory';
+// ── Supabase config ───────────────────────────────────────────
+const SB_URL = 'https://tuybygjerjuinzxkbdyg.supabase.co';
+const SB_KEY = 'sb_publishable_fdJejw9ZiMBZr9GHGjnYAg_NJ_Q0uZI';
 
-const TABS = [
+async function sbFetch(path, opts={}){
+  const res = await fetch(SB_URL+'/rest/v1/'+path, {
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal',...(opts.headers||{})},
+    ...opts
+  });
+  if(!res.ok){ const t=await res.text(); throw new Error(t); }
+  const txt = await res.text();
+  return txt ? JSON.parse(txt) : [];
+}
+
+// ── State ─────────────────────────────────────────────────────
+let username='', materials=[], products=[], log=[], matEditing=null, prodEditing=null, prodIngredients=[], currentTab='inventory', online=false;
+
+const TABS=[
   {key:'inventory', icon:'📦', label:'Inventario'},
   {key:'products',  icon:'🧪', label:'Productos'},
   {key:'calculator',icon:'🧮', label:'Costos'},
   {key:'log',       icon:'📋', label:'Registro'},
 ];
 
-// ── Storage ───────────────────────────────────────────────────
-function save(){
-  localStorage.setItem('xf_materials', JSON.stringify(materials));
-  localStorage.setItem('xf_products',  JSON.stringify(products));
-  localStorage.setItem('xf_log',       JSON.stringify(log));
+// ── Local storage ─────────────────────────────────────────────
+function lSave(){
+  localStorage.setItem('xf_materials',JSON.stringify(materials));
+  localStorage.setItem('xf_products', JSON.stringify(products));
+  localStorage.setItem('xf_log',      JSON.stringify(log));
 }
-function load(){
-  try{ materials  = JSON.parse(localStorage.getItem('xf_materials') || '[]'); }catch(e){}
-  try{ products   = JSON.parse(localStorage.getItem('xf_products')  || '[]'); }catch(e){}
-  try{ log        = JSON.parse(localStorage.getItem('xf_log')        || '[]'); }catch(e){}
-  username = localStorage.getItem('xf_user') || '';
+function lLoad(){
+  try{ materials = JSON.parse(localStorage.getItem('xf_materials')||'[]'); }catch(e){}
+  try{ products  = JSON.parse(localStorage.getItem('xf_products') ||'[]'); }catch(e){}
+  try{ log       = JSON.parse(localStorage.getItem('xf_log')      ||'[]'); }catch(e){}
+}
+
+// ── Cloud sync ────────────────────────────────────────────────
+function setSyncStatus(state, msg){
+  const el = document.getElementById('sync-bar');
+  el.className = 'sync-'+state;
+  el.textContent = msg;
+}
+
+async function cloudLoad(){
+  try{
+    const [mats, prods, logs] = await Promise.all([
+      sbFetch('materials?select=*&order=name'),
+      sbFetch('products?select=*&order=name'),
+      sbFetch('activity_log?select=*&order=time.desc&limit=100'),
+    ]);
+    materials = mats;
+    products  = prods.map(p=>({...p, ingredients: p.ingredients||[]}));
+    log       = logs.map(l=>({...l, user:l.usr}));
+    lSave();
+    online = true;
+    setSyncStatus('ok','☁️ En línea');
+  } catch(e){
+    online = false;
+    setSyncStatus('err','📴 Sin conexión');
+    console.warn('Cloud load failed, using local:', e);
+  }
+  renderAll();
+}
+
+async function cloudUpsert(table, row){
+  if(!online) return;
+  try{
+    await sbFetch(table, {method:'POST', headers:{'Prefer':'resolution=merge-duplicates,return=minimal'}, body:JSON.stringify(row)});
+  } catch(e){ console.warn('Upsert failed:', e); }
+}
+
+async function cloudDelete(table, id){
+  if(!online) return;
+  try{ await sbFetch(table+'?id=eq.'+id, {method:'DELETE'}); }
+  catch(e){ console.warn('Delete failed:', e); }
 }
 
 // ── Helpers ───────────────────────────────────────────────────
-const fmt  = n => '$' + Number(n).toFixed(2);
-const uid  = () => Date.now().toString(36) + Math.random().toString(36).slice(2,5);
-const now  = () => new Date().toLocaleString('es-MX',{dateStyle:'short',timeStyle:'short'});
+const fmt = n=>'$'+Number(n).toFixed(2);
+const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const now = ()=>new Date().toLocaleString('es-MX',{dateStyle:'short',timeStyle:'short'});
 
-function addLog(action, detail){
-  log.unshift({id:uid(), user:username, action, detail, time:now()});
-  if(log.length > 100) log.pop();
-  renderLog();
+async function addLog(action, detail){
+  const entry={id:uid(), usr:username, user:username, action, detail, time:now()};
+  log.unshift(entry); if(log.length>100) log.pop();
+  lSave(); renderLog();
+  await cloudUpsert('activity_log', {id:entry.id, usr:entry.usr, action, detail, time:entry.time});
 }
 
 // ── Login ─────────────────────────────────────────────────────
 function doLogin(){
-  const v = document.getElementById('name-input').value.trim();
-  if(!v) return;
-  username = v;
-  localStorage.setItem('xf_user', username);
-  document.getElementById('screen-login').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('hdr-user').textContent = username;
-  initNav(); renderAll();
+  const v=document.getElementById('name-input').value.trim(); if(!v) return;
+  username=v; localStorage.setItem('xf_user',username);
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('hdr-user').textContent=username;
+  lLoad(); renderAll(); initNav();
+  cloudLoad();
 }
 
 // ── Nav ───────────────────────────────────────────────────────
 function initNav(){
-  const desk = document.getElementById('desk-nav');
-  const mob  = document.getElementById('mobile-menu');
-  const bot  = document.getElementById('bot-nav');
-  desk.innerHTML = TABS.map(t=>`<button class="nav-btn${t.key===currentTab?' active':''}" onclick="setTab('${t.key}')">${t.icon} ${t.label}</button>`).join('');
-  mob.innerHTML  = TABS.map(t=>`<button class="mob-nav-btn${t.key===currentTab?' active':''}" onclick="setTab('${t.key}');toggleMenu()">${t.icon} ${t.label}</button>`).join('')
-                 + `<div style="color:var(--soft);font-size:12px;padding-left:4px;padding-top:8px">👤 ${username}</div>`;
-  bot.innerHTML  = TABS.map(t=>`<button class="bot-btn${t.key===currentTab?' active':''}" onclick="setTab('${t.key}')"><span class="bot-icon">${t.icon}</span><span class="bot-lbl">${t.label}</span><div class="bot-dot"></div></button>`).join('');
+  const desk=document.getElementById('desk-nav');
+  const mob =document.getElementById('mobile-menu');
+  const bot =document.getElementById('bot-nav');
+  desk.innerHTML=TABS.map(t=>`<button class="nav-btn${t.key===currentTab?' active':''}" onclick="setTab('${t.key}')">${t.icon} ${t.label}</button>`).join('');
+  mob.innerHTML =TABS.map(t=>`<button class="mob-nav-btn${t.key===currentTab?' active':''}" onclick="setTab('${t.key}');toggleMenu()">${t.icon} ${t.label}</button>`).join('')
+                +`<div style="color:var(--soft);font-size:12px;padding-left:4px;padding-top:8px">👤 ${username}</div>`;
+  bot.innerHTML =TABS.map(t=>`<button class="bot-btn${t.key===currentTab?' active':''}" onclick="setTab('${t.key}')"><span class="bot-icon">${t.icon}</span><span class="bot-lbl">${t.label}</span><div class="bot-dot"></div></button>`).join('');
 }
 function setTab(k){
-  currentTab = k;
-  document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active', el.id==='tab-'+k));
-  initNav();
-  if(k==='calculator') renderCalc();
+  currentTab=k;
+  document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active',el.id==='tab-'+k));
+  initNav(); if(k==='calculator') renderCalc();
 }
 function toggleMenu(){
-  const m = document.getElementById('mobile-menu');
-  const h = document.getElementById('hamburger');
-  const open = m.style.display === 'block';
-  m.style.display = open ? 'none' : 'block';
-  h.textContent   = open ? '☰' : '✕';
+  const m=document.getElementById('mobile-menu'), h=document.getElementById('hamburger');
+  const open=m.style.display==='block'; m.style.display=open?'none':'block'; h.textContent=open?'☰':'✕';
 }
 
 // ── Materials ─────────────────────────────────────────────────
-function saveMaterial(){
-  const name  = document.getElementById('m-name').value.trim();
-  const unit  = document.getElementById('m-unit').value;
-  const price = parseFloat(document.getElementById('m-price').value);
-  const stock = parseFloat(document.getElementById('m-stock').value);
-  const err   = document.getElementById('mat-err');
-  if(!name || isNaN(price) || isNaN(stock)){ err.textContent='Completa todos los campos.'; return; }
-  err.textContent = '';
+async function saveMaterial(){
+  const name=document.getElementById('m-name').value.trim();
+  const unit=document.getElementById('m-unit').value;
+  const price=parseFloat(document.getElementById('m-price').value);
+  const stock=parseFloat(document.getElementById('m-stock').value);
+  const err=document.getElementById('mat-err');
+  if(!name||isNaN(price)||isNaN(stock)){err.textContent='Completa todos los campos.';return;}
+  err.textContent='';
+  let row;
   if(matEditing){
-    materials = materials.map(m => m.id===matEditing ? {...m,name,unit,price,stock} : m);
-    addLog('✏️ Editó material', name); matEditing = null;
-    document.getElementById('mat-form-title').textContent = '➕ Nuevo Material';
-    document.querySelector('#tab-inventory .btn-p').textContent = 'Agregar';
-    document.getElementById('mat-cancel').style.display = 'none';
+    materials=materials.map(m=>m.id===matEditing?{...m,name,unit,price,stock}:m);
+    row={id:matEditing,name,unit,price,stock};
+    addLog('✏️ Editó material',name); matEditing=null;
+    document.getElementById('mat-form-title').textContent='➕ Nuevo Material';
+    document.querySelector('#tab-inventory .btn-p').textContent='Agregar';
+    document.getElementById('mat-cancel').style.display='none';
   } else {
-    materials.push({id:uid(),name,unit,price,stock});
-    addLog('➕ Agregó material', name);
+    row={id:uid(),name,unit,price,stock};
+    materials.push(row); addLog('➕ Agregó material',name);
   }
-  save(); clearMatForm(); renderMaterials(); renderIngSelect(); renderCalcSelect();
+  lSave(); clearMatForm(); renderMaterials(); renderIngSelect(); renderCalcSelect();
+  await cloudUpsert('materials',row);
 }
 function editMaterial(id){
-  const m = materials.find(x=>x.id===id); if(!m) return;
-  matEditing = id;
-  document.getElementById('m-name').value  = m.name;
-  document.getElementById('m-unit').value  = m.unit;
-  document.getElementById('m-price').value = m.price;
-  document.getElementById('m-stock').value = m.stock;
-  document.getElementById('mat-form-title').textContent = '✏️ Editar Material';
-  document.querySelector('#tab-inventory .btn-p').textContent = 'Guardar';
-  document.getElementById('mat-cancel').style.display = 'inline-block';
+  const m=materials.find(x=>x.id===id); if(!m) return;
+  matEditing=id;
+  document.getElementById('m-name').value=m.name;
+  document.getElementById('m-unit').value=m.unit;
+  document.getElementById('m-price').value=m.price;
+  document.getElementById('m-stock').value=m.stock;
+  document.getElementById('mat-form-title').textContent='✏️ Editar Material';
+  document.querySelector('#tab-inventory .btn-p').textContent='Guardar';
+  document.getElementById('mat-cancel').style.display='inline-block';
+  window.scrollTo({top:0,behavior:'smooth'});
 }
-function deleteMaterial(id){
-  const m = materials.find(x=>x.id===id);
-  materials = materials.filter(x=>x.id!==id);
-  addLog('🗑️ Eliminó material', m?.name||id);
+async function deleteMaterial(id){
+  const m=materials.find(x=>x.id===id);
+  materials=materials.filter(x=>x.id!==id);
+  addLog('🗑️ Eliminó material',m?.name||id);
   if(matEditing===id) cancelMat();
-  save(); renderMaterials(); renderIngSelect(); renderCalcSelect();
+  lSave(); renderMaterials(); renderIngSelect(); renderCalcSelect();
+  await cloudDelete('materials',id);
 }
 function cancelMat(){
   matEditing=null; clearMatForm();
@@ -314,14 +378,14 @@ function clearMatForm(){
   document.getElementById('m-unit').value='kg';
 }
 function renderMaterials(){
-  const el    = document.getElementById('mat-list');
-  const title = document.getElementById('mat-list-title');
-  const stats = document.getElementById('mat-stats');
-  title.textContent = `📋 Materiales (${materials.length})`;
-  if(!materials.length){ el.innerHTML='<div class="empty">Sin materiales. Agrega tu primera materia prima 🍓</div>'; stats.style.display='none'; return; }
-  const isMob = window.innerWidth < 700;
+  const el=document.getElementById('mat-list');
+  const title=document.getElementById('mat-list-title');
+  const stats=document.getElementById('mat-stats');
+  title.textContent=`📋 Materiales (${materials.length})`;
+  if(!materials.length){el.innerHTML='<div class="empty">Sin materiales. Agrega tu primera materia prima 🍓</div>';stats.style.display='none';return;}
+  const isMob=window.innerWidth<700;
   if(isMob){
-    el.innerHTML = materials.map(m=>`
+    el.innerHTML=materials.map(m=>`
       <div style="background:rgba(255,182,193,0.2);border-radius:10px;padding:12px 14px;margin-bottom:8px">
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
           <div>
@@ -333,18 +397,18 @@ function renderMaterials(){
         </div>
       </div>`).join('');
   } else {
-    el.innerHTML = `<div class="ovx"><table><thead><tr><th>Material</th><th>Unidad</th><th>Precio/u</th><th>Stock</th><th>Valor total</th><th></th></tr></thead><tbody>`
-      + materials.map((m,i)=>`<tr style="background:${i%2===0?'rgba(255,182,193,0.15)':'transparent'}">
+    el.innerHTML=`<div class="ovx"><table><thead><tr><th>Material</th><th>Unidad</th><th>Precio/u</th><th>Stock</th><th>Valor total</th><th></th></tr></thead><tbody>`
+      +materials.map((m,i)=>`<tr style="background:${i%2===0?'rgba(255,182,193,0.15)':'transparent'}">
           <td><strong>${m.name}</strong></td><td>${m.unit}</td><td>${fmt(m.price)}</td><td>${m.stock} ${m.unit}</td>
           <td style="color:var(--acc);font-weight:700">${fmt(m.price*m.stock)}</td>
           <td><button class="btn-icon" onclick="editMaterial('${m.id}')">✏️</button><button class="btn-icon" style="color:#e11d48" onclick="deleteMaterial('${m.id}')">🗑️</button></td>
         </tr>`).join('')
-      + `</tbody></table></div>`;
+      +`</tbody></table></div>`;
   }
-  const totalVal = materials.reduce((s,m)=>s+m.price*m.stock,0);
-  const costliest = materials.reduce((a,b)=>a.price>b.price?a:b);
+  const totalVal=materials.reduce((s,m)=>s+m.price*m.stock,0);
+  const costliest=materials.reduce((a,b)=>a.price>b.price?a:b);
   stats.style.display='grid';
-  stats.innerHTML = `
+  stats.innerHTML=`
     <div class="stat-box"><div class="stat-lbl">Materiales</div><div class="stat-val">${materials.length}</div></div>
     <div class="stat-box"><div class="stat-lbl">Valor inventario</div><div class="stat-val" style="color:var(--acc)">${fmt(totalVal)}</div></div>
     <div class="stat-box"><div class="stat-lbl">Más costoso</div><div class="stat-val" style="font-size:15px">${costliest.name}</div></div>`;
@@ -352,32 +416,27 @@ function renderMaterials(){
 
 // ── Ingredients ───────────────────────────────────────────────
 function renderIngSelect(){
-  const sel = document.getElementById('ing-mat');
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">— Material —</option>'
-    + materials.map(m=>`<option value="${m.id}"${m.id===cur?' selected':''}>${m.name} (${m.unit})</option>`).join('');
+  const sel=document.getElementById('ing-mat'), cur=sel.value;
+  sel.innerHTML='<option value="">— Material —</option>'
+    +materials.map(m=>`<option value="${m.id}"${m.id===cur?' selected':''}>${m.name} (${m.unit})</option>`).join('');
 }
 function addIngredient(){
-  const mid = document.getElementById('ing-mat').value;
-  const qty = parseFloat(document.getElementById('ing-qty').value);
-  if(!mid || isNaN(qty) || qty<=0) return;
-  const exists = prodIngredients.find(i=>i.materialId===mid);
-  if(exists) exists.quantity=qty;
-  else prodIngredients.push({materialId:mid, quantity:qty});
+  const mid=document.getElementById('ing-mat').value;
+  const qty=parseFloat(document.getElementById('ing-qty').value);
+  if(!mid||isNaN(qty)||qty<=0) return;
+  const exists=prodIngredients.find(i=>i.materialId===mid);
+  if(exists) exists.quantity=qty; else prodIngredients.push({materialId:mid,quantity:qty});
   document.getElementById('ing-qty').value='';
   document.getElementById('ing-mat').value='';
   renderIngList();
 }
-function removeIngredient(mid){
-  prodIngredients = prodIngredients.filter(i=>i.materialId!==mid);
-  renderIngList();
-}
+function removeIngredient(mid){ prodIngredients=prodIngredients.filter(i=>i.materialId!==mid); renderIngList(); }
 function renderIngList(){
-  const el = document.getElementById('ing-list');
-  if(!prodIngredients.length){ el.innerHTML=''; return; }
-  const totalCost = prodIngredients.reduce((s,ing)=>{ const m=materials.find(x=>x.id===ing.materialId); return s+(m?m.price*ing.quantity:0); },0);
-  el.innerHTML = prodIngredients.map(ing=>{
-    const m = materials.find(x=>x.id===ing.materialId); if(!m) return '';
+  const el=document.getElementById('ing-list');
+  if(!prodIngredients.length){el.innerHTML='';return;}
+  const totalCost=prodIngredients.reduce((s,ing)=>{const m=materials.find(x=>x.id===ing.materialId);return s+(m?m.price*ing.quantity:0);},0);
+  el.innerHTML=prodIngredients.map(ing=>{
+    const m=materials.find(x=>x.id===ing.materialId); if(!m) return '';
     return `<div class="ing-row">
       <span style="color:var(--dark);font-weight:600">${m.name} · ${ing.quantity} ${m.unit}</span>
       <div style="display:flex;align-items:center;gap:10px">
@@ -385,46 +444,49 @@ function renderIngList(){
         <button class="btn-icon" style="color:#e11d48" onclick="removeIngredient('${ing.materialId}')">✕</button>
       </div>
     </div>`;
-  }).join('') + `<div style="text-align:right;color:var(--acc);font-weight:700;font-size:15px;padding-right:4px">Costo: ${fmt(totalCost)}</div>`;
+  }).join('')+`<div style="text-align:right;color:var(--acc);font-weight:700;font-size:15px;padding-right:4px">Costo: ${fmt(totalCost)}</div>`;
 }
 
 // ── Products ──────────────────────────────────────────────────
-function saveProduct(){
-  const name   = document.getElementById('p-name').value.trim();
-  const margin = parseFloat(document.getElementById('p-margin').value);
-  const err    = document.getElementById('prod-err');
-  if(!name){ err.textContent='Ingresa el nombre del producto.'; return; }
-  if(!prodIngredients.length){ err.textContent='Agrega al menos un ingrediente.'; return; }
+async function saveProduct(){
+  const name=document.getElementById('p-name').value.trim();
+  const margin=parseFloat(document.getElementById('p-margin').value);
+  const err=document.getElementById('prod-err');
+  if(!name){err.textContent='Ingresa el nombre del producto.';return;}
+  if(!prodIngredients.length){err.textContent='Agrega al menos un ingrediente.';return;}
   err.textContent='';
+  let row;
   if(prodEditing){
-    products = products.map(p=>p.id===prodEditing ? {...p,name,margin,ingredients:[...prodIngredients]} : p);
-    addLog('✏️ Editó producto', name); prodEditing=null;
+    products=products.map(p=>p.id===prodEditing?{...p,name,margin,ingredients:[...prodIngredients]}:p);
+    row={id:prodEditing,name,margin,ingredients:prodIngredients};
+    addLog('✏️ Editó producto',name); prodEditing=null;
     document.getElementById('prod-form-title').textContent='➕ Nuevo Producto';
     document.querySelector('#tab-products .btn-p').textContent='Crear producto';
     document.getElementById('prod-cancel').style.display='none';
   } else {
-    products.push({id:uid(),name,margin,ingredients:[...prodIngredients]});
-    addLog('➕ Creó producto', name);
+    row={id:uid(),name,margin,ingredients:[...prodIngredients]};
+    products.push(row); addLog('➕ Creó producto',name);
   }
-  save(); clearProdForm(); renderProducts(); renderCalcSelect();
+  lSave(); clearProdForm(); renderProducts(); renderCalcSelect();
+  await cloudUpsert('products',row);
 }
 function editProduct(id){
-  const p = products.find(x=>x.id===id); if(!p) return;
-  prodEditing = id;
-  prodIngredients = [...p.ingredients];
-  document.getElementById('p-name').value   = p.name;
-  document.getElementById('p-margin').value = p.margin;
+  const p=products.find(x=>x.id===id); if(!p) return;
+  prodEditing=id; prodIngredients=[...p.ingredients];
+  document.getElementById('p-name').value=p.name;
+  document.getElementById('p-margin').value=p.margin;
   document.getElementById('prod-form-title').textContent='✏️ Editar Producto';
   document.querySelector('#tab-products .btn-p').textContent='Guardar';
   document.getElementById('prod-cancel').style.display='inline-block';
-  renderIngList();
+  renderIngList(); window.scrollTo({top:0,behavior:'smooth'});
 }
-function deleteProduct(id){
-  const p = products.find(x=>x.id===id);
-  products = products.filter(x=>x.id!==id);
-  addLog('🗑️ Eliminó producto', p?.name||id);
+async function deleteProduct(id){
+  const p=products.find(x=>x.id===id);
+  products=products.filter(x=>x.id!==id);
+  addLog('🗑️ Eliminó producto',p?.name||id);
   if(prodEditing===id) cancelProd();
-  save(); renderProducts(); renderCalcSelect();
+  lSave(); renderProducts(); renderCalcSelect();
+  await cloudDelete('products',id);
 }
 function cancelProd(){
   prodEditing=null; clearProdForm();
@@ -440,13 +502,13 @@ function clearProdForm(){
   document.getElementById('ing-list').innerHTML='';
 }
 function renderProducts(){
-  const el    = document.getElementById('prod-list');
-  const title = document.getElementById('prod-list-title');
+  const el=document.getElementById('prod-list');
+  const title=document.getElementById('prod-list-title');
   title.textContent=`🍓 Productos (${products.length})`;
-  if(!products.length){ el.innerHTML='<div class="empty">Sin productos. Crea tu primer producto 🍓</div>'; return; }
-  el.innerHTML = products.map(p=>{
-    const cost = p.ingredients.reduce((s,ing)=>{ const m=materials.find(x=>x.id===ing.materialId); return s+(m?m.price*ing.quantity:0); },0);
-    const sale = cost/(1-p.margin/100);
+  if(!products.length){el.innerHTML='<div class="empty">Sin productos. Crea tu primer producto 🍓</div>';return;}
+  el.innerHTML=products.map(p=>{
+    const cost=p.ingredients.reduce((s,ing)=>{const m=materials.find(x=>x.id===ing.materialId);return s+(m?m.price*ing.quantity:0);},0);
+    const sale=cost/(1-p.margin/100);
     return `<div style="background:rgba(255,192,203,0.2);border-radius:12px;padding:14px 16px;border:1px solid var(--border);margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
         <div>
@@ -469,36 +531,34 @@ function renderProducts(){
 
 // ── Calculator ────────────────────────────────────────────────
 function renderCalcSelect(){
-  const sel = document.getElementById('calc-prod');
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">— Selecciona un producto —</option>'
-    + products.map(p=>`<option value="${p.id}"${p.id===cur?' selected':''}>${p.name}</option>`).join('');
+  const sel=document.getElementById('calc-prod'), cur=sel.value;
+  sel.innerHTML='<option value="">— Selecciona un producto —</option>'
+    +products.map(p=>`<option value="${p.id}"${p.id===cur?' selected':''}>${p.name}</option>`).join('');
   renderCalc();
 }
 function renderCalc(){
-  const pid = document.getElementById('calc-prod').value;
-  const qty = parseFloat(document.getElementById('calc-qty').value)||1;
-  const el  = document.getElementById('calc-result');
-  const p   = products.find(x=>x.id===pid);
-  if(!p){ el.innerHTML=`<div class="card" style="text-align:center;padding:48px 20px"><div style="font-size:48px;margin-bottom:12px">🍓</div><div style="color:var(--mid)">Selecciona un producto para ver el análisis de costos</div></div>`; return; }
+  const pid=document.getElementById('calc-prod').value;
+  const qty=parseFloat(document.getElementById('calc-qty').value)||1;
+  const el=document.getElementById('calc-result');
+  const p=products.find(x=>x.id===pid);
+  if(!p){el.innerHTML=`<div class="card" style="text-align:center;padding:48px 20px"><div style="font-size:48px;margin-bottom:12px">🍓</div><div style="color:var(--mid)">Selecciona un producto para ver el análisis de costos</div></div>`;return;}
   let costUnit=0;
-  const rows = p.ingredients.map(ing=>{ const m=materials.find(x=>x.id===ing.materialId); if(!m) return null; const lt=m.price*ing.quantity; costUnit+=lt; return {name:m.name,unit:m.unit,quantity:ing.quantity,price:m.price,lt}; }).filter(Boolean);
-  const sale  = costUnit/(1-p.margin/100);
-  const profit= sale-costUnit;
-  const isMob = window.innerWidth<700;
+  const rows=p.ingredients.map(ing=>{const m=materials.find(x=>x.id===ing.materialId);if(!m)return null;const lt=m.price*ing.quantity;costUnit+=lt;return{name:m.name,unit:m.unit,quantity:ing.quantity,price:m.price,lt};}).filter(Boolean);
+  const sale=costUnit/(1-p.margin/100), profit=sale-costUnit;
+  const isMob=window.innerWidth<700;
   let tableHtml='';
   if(isMob){
-    tableHtml = rows.map(r=>`<div style="background:rgba(255,182,193,0.2);border-radius:8px;padding:10px 12px;margin-bottom:6px">
+    tableHtml=rows.map(r=>`<div style="background:rgba(255,182,193,0.2);border-radius:8px;padding:10px 12px;margin-bottom:6px">
       <div style="font-weight:600;color:var(--dark)">${r.name}</div>
       <div style="color:var(--mid);font-size:13px">${r.quantity} ${r.unit}/u · ${fmt(r.price)}/u · ×${qty}</div>
       <div style="color:var(--acc);font-weight:700">${fmt(r.lt*qty)}</div>
-    </div>`).join('') + `<div style="text-align:right;color:var(--acc);font-weight:700;font-size:15px;padding-top:6px">Costo total: ${fmt(costUnit*qty)}</div>`;
+    </div>`).join('')+`<div style="text-align:right;color:var(--acc);font-weight:700;font-size:15px;padding-top:6px">Costo total: ${fmt(costUnit*qty)}</div>`;
   } else {
-    tableHtml = `<div class="ovx"><table><thead><tr><th>Ingrediente</th><th>Cant/u</th><th>Cant total</th><th>Precio/u</th><th>Subtotal</th></tr></thead><tbody>`
-      + rows.map((r,i)=>`<tr style="background:${i%2===0?'rgba(255,182,193,0.15)':'transparent'}"><td>${r.name}</td><td>${r.quantity} ${r.unit}</td><td>${(r.quantity*qty).toFixed(3)} ${r.unit}</td><td>${fmt(r.price)}</td><td style="color:var(--acc);font-weight:600">${fmt(r.lt*qty)}</td></tr>`).join('')
-      + `</tbody><tfoot><tr style="border-top:2px solid var(--border)"><td colspan="4" style="text-align:right;font-weight:700">Costo total:</td><td style="color:var(--acc);font-weight:700;font-size:15px">${fmt(costUnit*qty)}</td></tr></tfoot></table></div>`;
+    tableHtml=`<div class="ovx"><table><thead><tr><th>Ingrediente</th><th>Cant/u</th><th>Cant total</th><th>Precio/u</th><th>Subtotal</th></tr></thead><tbody>`
+      +rows.map((r,i)=>`<tr style="background:${i%2===0?'rgba(255,182,193,0.15)':'transparent'}"><td>${r.name}</td><td>${r.quantity} ${r.unit}</td><td>${(r.quantity*qty).toFixed(3)} ${r.unit}</td><td>${fmt(r.price)}</td><td style="color:var(--acc);font-weight:600">${fmt(r.lt*qty)}</td></tr>`).join('')
+      +`</tbody><tfoot><tr style="border-top:2px solid var(--border)"><td colspan="4" style="text-align:right;font-weight:700">Costo total:</td><td style="color:var(--acc);font-weight:700;font-size:15px">${fmt(costUnit*qty)}</td></tr></tfoot></table></div>`;
   }
-  el.innerHTML = `
+  el.innerHTML=`
     <div class="stats-row">
       <div class="stat-box"><div class="stat-lbl">Costo/u</div><div class="stat-val" style="color:#db2777">${fmt(costUnit)}</div></div>
       <div class="stat-box"><div class="stat-lbl">Venta/u</div><div class="stat-val" style="color:#be123c">${fmt(sale)}</div></div>
@@ -506,8 +566,7 @@ function renderCalc(){
       <div class="stat-box"><div class="stat-lbl">Ingreso total</div><div class="stat-val" style="color:#831843">${fmt(sale*qty)}</div></div>
     </div>
     <div class="card">
-      <div class="card-title">📊 Desglose · ${qty} unidad(es)</div>
-      ${tableHtml}
+      <div class="card-title">📊 Desglose · ${qty} unidad(es)</div>${tableHtml}
     </div>
     <div class="card">
       <div class="card-title">💡 Composición del precio</div>
@@ -535,11 +594,11 @@ function renderCalc(){
 
 // ── Log ───────────────────────────────────────────────────────
 function renderLog(){
-  const el    = document.getElementById('log-list');
-  const title = document.getElementById('log-title');
+  const el=document.getElementById('log-list');
+  const title=document.getElementById('log-title');
   title.textContent=`Historial (${log.length} eventos)`;
-  if(!log.length){ el.innerHTML='<div class="empty">Sin actividad registrada todavía 🍓</div>'; return; }
-  el.innerHTML = log.map(e=>`
+  if(!log.length){el.innerHTML='<div class="empty">Sin actividad registrada todavía 🍓</div>';return;}
+  el.innerHTML=log.map(e=>`
     <div style="background:rgba(255,192,203,0.15);border-radius:10px;padding:12px 14px;border:1px solid var(--border);margin-bottom:8px">
       <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:flex-start">
         <div>
@@ -547,7 +606,7 @@ function renderLog(){
           <span style="color:var(--mid);font-size:13px;margin-left:6px">${e.detail}</span>
         </div>
         <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
-          <span class="tag">🍓 ${e.user}</span>
+          <span class="tag">🍓 ${e.user||e.usr}</span>
           <span style="color:var(--soft);font-size:12px">${e.time}</span>
         </div>
       </div>
@@ -558,16 +617,18 @@ function renderLog(){
 function renderAll(){ renderMaterials(); renderIngSelect(); renderProducts(); renderCalcSelect(); renderLog(); }
 
 load();
+username=localStorage.getItem('xf_user')||'';
 if(username){
   document.getElementById('screen-login').style.display='none';
   document.getElementById('app').style.display='block';
   document.getElementById('hdr-user').textContent=username;
-  initNav(); renderAll();
-} else {
-  document.getElementById('screen-login').style.display='flex';
+  lLoad(); renderAll(); initNav(); cloudLoad();
 }
 
-window.addEventListener('resize', ()=>{ renderMaterials(); renderProducts(); if(currentTab==='calculator') renderCalc(); });
+window.addEventListener('resize',()=>{ renderMaterials(); renderProducts(); if(currentTab==='calculator') renderCalc(); });
+
+// Reload cloud every 60s para ver cambios de otros usuarios
+setInterval(()=>{ if(online) cloudLoad(); }, 60000);
 </script>
 </body>
 </html>
