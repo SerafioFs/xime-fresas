@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🍓 Xime-Fresas</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;background:linear-gradient(135deg,#ffe4ef 0%,#ffd6e7 50%,#ffb6c1 100%);color:#831843}
+  :root{--acc:#db2777;--dark:#831843;--mid:#9d174d;--soft:#be185d99;--border:#f9a8d4;--card:rgba(255,255,255,0.72)}
+  input,select{background:rgba(255,255,255,0.85);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--dark);font-size:15px;outline:none;width:100%;font-family:inherit}
+  button{font-family:inherit;cursor:pointer}
+  .btn-p{background:var(--acc);color:#fff;border:none;border-radius:20px;padding:11px 22px;font-weight:700;font-size:14px}
+  .btn-g{background:rgba(255,255,255,0.6);color:var(--mid);border:1px solid var(--border);border-radius:20px;padding:11px 20px;font-size:14px}
+  .btn-icon{background:rgba(255,255,255,0.7);border:1px solid var(--border);border-radius:8px;padding:5px 10px;color:var(--mid);font-size:14px;margin-right:2px}
+  .card{background:var(--card);backdrop-filter:blur(8px);border-radius:14px;padding:18px 20px;border:1px solid var(--border);box-shadow:0 2px 14px rgba(219,39,119,0.07);margin-bottom:14px}
+  .card-title{font-weight:700;font-size:15px;color:var(--dark);margin-bottom:14px}
+  h2{font-size:22px;font-weight:800;color:var(--dark);margin-bottom:14px}
+  label.lbl{font-size:12px;color:var(--mid);font-weight:700;text-transform:uppercase;display:block;margin-bottom:4px}
+  .fld{display:flex;flex-direction:column;gap:4px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+  .stat-box{background:rgba(255,255,255,0.6);border-radius:12px;padding:14px 16px;border:1px solid var(--border)}
+  .stat-lbl{color:var(--soft);font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:4px}
+  .stat-val{font-weight:800;font-size:20px;word-break:break-word}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{padding:10px 12px;text-align:left;color:var(--mid);font-size:12px;font-weight:700;text-transform:uppercase;border-bottom:1px solid var(--border)}
+  td{padding:10px 12px;color:var(--dark);border-bottom:1px solid rgba(249,168,212,0.3)}
+  .err{color:#e11d48;font-size:13px;margin-top:8px;font-weight:600}
+  .empty{color:var(--soft);text-align:center;padding:32px 0;font-size:14px}
+  .tag{background:rgba(219,39,119,0.15);color:var(--acc);border-radius:99px;padding:2px 10px;font-size:12px;font-weight:700}
+  header{background:rgba(255,220,235,0.97);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;backdrop-filter:blur(10px)}
+  .hinner{max-width:1100px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .logo-name{font-weight:900;font-size:20px;color:var(--dark);font-family:Georgia,serif}
+  .logo-sub{font-size:11px;color:var(--mid)}
+  nav.desk-nav{display:flex;gap:6px}
+  .nav-btn{background:rgba(255,255,255,0.5);border:1px solid var(--border);color:var(--mid);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600}
+  .nav-btn.active{background:var(--acc);border-color:var(--acc);color:#fff}
+  #hamburger{background:none;border:none;font-size:26px;color:var(--dark);line-height:1;padding:4px;display:none}
+  #mobile-menu{display:none;background:rgba(255,220,235,0.98);border-top:1px solid var(--border);padding:8px 16px 16px}
+  .mob-nav-btn{display:block;width:100%;text-align:left;padding:14px 16px;background:transparent;border:none;border-radius:12px;font-weight:700;font-size:15px;color:var(--dark);margin-bottom:4px}
+  .mob-nav-btn.active{background:var(--acc);color:#fff}
+  main{max-width:1100px;width:100%;margin:0 auto;padding:20px 20px 70px}
+  .tab{display:none}
+  .tab.active{display:block}
+  footer-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(255,220,235,0.97);border-top:1px solid var(--border);z-index:200;backdrop-filter:blur(10px)}
+  .bot-nav{display:flex}
+  .bot-btn{flex:1;border:none;background:none;padding:10px 4px 12px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+  .bot-icon{font-size:22px}
+  .bot-lbl{font-size:10px;font-weight:700;color:var(--soft)}
+  .bot-btn.active .bot-lbl{color:var(--acc)}
+  .bot-dot{width:20px;height:3px;background:var(--acc);border-radius:99px;display:none}
+  .bot-btn.active .bot-dot{display:block}
+  .bar-bg{background:rgba(255,182,193,0.2);border-radius:99px;height:12px;overflow:hidden;margin-top:4px}
+  .bar-fill{height:100%;border-radius:99px}
+  .price-box{background:rgba(255,192,203,0.25);border:2px solid var(--acc);border-radius:14px;padding:20px 16px;text-align:center;margin-top:16px}
+  .price-big{color:var(--acc);font-size:48px;font-weight:900;letter-spacing:-1px;font-family:Georgia,serif;line-height:1.1}
+  .ing-row{display:flex;justify-content:space-between;align-items:center;background:rgba(255,182,193,0.2);border-radius:8px;padding:10px 12px;margin-bottom:6px}
+  .screen-login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .login-box{background:var(--card);backdrop-filter:blur(8px);border-radius:16px;padding:40px 28px;border:1px solid var(--border);max-width:400px;width:100%;text-align:center}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .ovx{overflow-x:auto}
+  @media(max-width:700px){
+    .grid4{grid-template-columns:1fr 1fr}
+    .grid2{grid-template-columns:1fr}
+    .stats-row{grid-template-columns:1fr 1fr}
+    nav.desk-nav{display:none}
+    #hamburger{display:block}
+    footer-bar{display:block}
+    .price-big{font-size:36px}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen-login">
+  <div class="login-box">
+    <div style="font-size:52px;margin-bottom:8px">🍓</div>
+    <div style="font-weight:900;font-size:24px;font-family:Georgia,serif;margin-bottom:6px">Xime-Fresas</div>
+    <div style="color:var(--mid);font-size:14px;margin-bottom:20px">¿Cómo te llamas? Tu nombre aparecerá en el registro.</div>
+    <input id="name-input" placeholder="Tu nombre…" style="text-align:center;margin-bottom:12px;font-size:16px" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="btn-p" style="width:100%;padding:14px 0;font-size:16px" onclick="doLogin()">Entrar 🍓</button>
+    <div style="color:var(--soft);font-size:11px;margin-top:14px">Los datos se guardan localmente en este navegador.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+  <header>
+    <div class="hinner">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:28px">🍓</span>
+        <div>
+          <div class="logo-name">Xime-Fresas</div>
+          <div class="logo-sub">Usuario: <strong id="hdr-user" style="color:var(--acc)"></strong></div>
+        </div>
+      </div>
+      <nav class="desk-nav" id="desk-nav"></nav>
+      <button id="hamburger" onclick="toggleMenu()">☰</button>
+    </div>
+    <div id="mobile-menu"></div>
+  </header>
+
+  <main>
+    <!-- INVENTARIO -->
+    <div id="tab-inventory" class="tab active">
+      <h2>📦 Inventario de Materia Prima</h2>
+      <div class="card">
+        <div class="card-title" id="mat-form-title">➕ Nuevo Material</div>
+        <div class="grid4">
+          <div class="fld"><label class="lbl">Nombre</label><input id="m-name" placeholder="Ej. Fresas"/></div>
+          <div class="fld"><label class="lbl">Unidad</label>
+            <select id="m-unit"><option>kg</option><option>g</option><option>l</option><option>ml</option><option>pza</option><option>m</option><option>cm</option><option>lb</option><option>oz</option></select>
+          </div>
+          <div class="fld"><label class="lbl">Precio/u ($)</label><input id="m-price" type="number" placeholder="0.00"/></div>
+          <div class="fld"><label class="lbl">Stock</label><input id="m-stock" type="number" placeholder="0"/></div>
+        </div>
+        <div id="mat-err" class="err"></div>
+        <div class="row">
+          <button class="btn-p" onclick="saveMaterial()">Agregar</button>
+          <button class="btn-g" id="mat-cancel" style="display:none" onclick="cancelMat()">Cancelar</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" id="mat-list-title">📋 Materiales (0)</div>
+        <div id="mat-list"><div class="empty">Sin materiales. Agrega tu primera materia prima 🍓</div></div>
+      </div>
+      <div id="mat-stats" class="stats-row" style="display:none"></div>
+    </div>
+
+    <!-- PRODUCTOS -->
+    <div id="tab-products" class="tab">
+      <h2>🧪 Gestión de Productos</h2>
+      <div class="card">
+        <div class="card-title" id="prod-form-title">➕ Nuevo Producto</div>
+        <div class="grid2">
+          <div class="fld"><label class="lbl">Nombre del producto</label><input id="p-name" placeholder="Ej. Fresas con crema"/></div>
+          <div class="fld"><label class="lbl">Margen de ganancia (%)</label><input id="p-margin" type="number" min="1" max="99" value="30"/></div>
+        </div>
+        <div style="margin-top:16px">
+          <label class="lbl" style="margin-bottom:8px">Ingredientes</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="ing-mat" style="flex:1 1 150px"><option value="">— Material —</option></select>
+            <input id="ing-qty" type="number" placeholder="Cantidad" style="width:110px;flex:0 0 110px"/>
+            <button class="btn-p" onclick="addIngredient()">+ Agregar</button>
+          </div>
+          <div id="ing-list" style="margin-top:10px"></div>
+        </div>
+        <div id="prod-err" class="err"></div>
+        <div class="row">
+          <button class="btn-p" onclick="saveProduct()">Crear producto</button>
+          <button class="btn-g" id="prod-cancel" style="display:none" onclick="cancelProd()">Cancelar</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" id="prod-list-title">🍓 Productos (0)</div>
+        <div id="prod-list"><div class="empty">Sin productos. Crea tu primer producto 🍓</div></div>
+      </div>
+    </div>
+
+    <!-- CALCULADORA -->
+    <div id="tab-calculator" class="tab">
+      <h2>🧮 Calculadora de Costos</h2>
+      <div class="card">
+        <div class="card-title">🎯 Configura tu cálculo</div>
+        <div class="grid2">
+          <div class="fld"><label class="lbl">Producto</label>
+            <select id="calc-prod" onchange="renderCalc()"><option value="">— Selecciona un producto —</option></select>
+          </div>
+          <div class="fld"><label class="lbl">Cantidad a producir</label>
+            <input id="calc-qty" type="number" min="1" value="1" oninput="renderCalc()"/>
+          </div>
+        </div>
+      </div>
+      <div id="calc-result"></div>
+    </div>
+
+    <!-- REGISTRO -->
+    <div id="tab-log" class="tab">
+      <h2>📋 Registro de Cambios</h2>
+      <div class="card">
+        <div class="card-title" id="log-title">Historial (0 eventos)</div>
+        <div id="log-list"><div class="empty">Sin actividad registrada todavía 🍓</div></div>
+      </div>
+    </div>
+  </main>
+
+  <footer-bar>
+    <div class="bot-nav" id="bot-nav"></div>
+  </footer-bar>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────
+let username = '', materials = [], products = [], log = [], matEditing = null, prodEditing = null, prodIngredients = [], currentTab = 'inventory';
+
+const TABS = [
+  {key:'inventory', icon:'📦', label:'Inventario'},
+  {key:'products',  icon:'🧪', label:'Productos'},
+  {key:'calculator',icon:'🧮', label:'Costos'},
+  {key:'log',       icon:'📋', label:'Registro'},
+];
+
+// ── Storage ───────────────────────────────────────────────────
+function save(){
+  localStorage.setItem('xf_materials', JSON.stringify(materials));
+  localStorage.setItem('xf_products',  JSON.stringify(products));
+  localStorage.setItem('xf_log',       JSON.stringify(log));
+}
+function load(){
+  try{ materials  = JSON.parse(localStorage.getItem('xf_materials') || '[]'); }catch(e){}
+  try{ products   = JSON.parse(localStorage.getItem('xf_products')  || '[]'); }catch(e){}
+  try{ log        = JSON.parse(localStorage.getItem('xf_log')        || '[]'); }catch(e){}
+  username = localStorage.getItem('xf_user') || '';
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+const fmt  = n => '$' + Number(n).toFixed(2);
+const uid  = () => Date.now().toString(36) + Math.random().toString(36).slice(2,5);
+const now  = () => new Date().toLocaleString('es-MX',{dateStyle:'short',timeStyle:'short'});
+
+function addLog(action, detail){
+  log.unshift({id:uid(), user:username, action, detail, time:now()});
+  if(log.length > 100) log.pop();
+  renderLog();
+}
+
+// ── Login ─────────────────────────────────────────────────────
+function doLogin(){
+  const v = document.getElementById('name-input').value.trim();
+  if(!v) return;
+  username = v;
+  localStorage.setItem('xf_user', username);
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('hdr-user').textContent = username;
+  initNav(); renderAll();
+}
+
+// ── Nav ───────────────────────────────────────────────────────
+function initNav(){
+  const desk = document.getElementById('desk-nav');
+  const mob  = document.getElementById('mobile-menu');
+  const bot  = document.getElementById('bot-nav');
+  desk.innerHTML = TABS.map(t=>`<button class="nav-btn${t.key===currentTab?' active':''}" onclick="setTab('${t.key}')">${t.icon} ${t.label}</button>`).join('');
+  mob.innerHTML  = TABS.map(t=>`<button class="mob-nav-btn${t.key===currentTab?' active':''}" onclick="setTab('${t.key}');toggleMenu()">${t.icon} ${t.label}</button>`).join('')
+                 + `<div style="color:var(--soft);font-size:12px;padding-left:4px;padding-top:8px">👤 ${username}</div>`;
+  bot.innerHTML  = TABS.map(t=>`<button class="bot-btn${t.key===currentTab?' active':''}" onclick="setTab('${t.key}')"><span class="bot-icon">${t.icon}</span><span class="bot-lbl">${t.label}</span><div class="bot-dot"></div></button>`).join('');
+}
+function setTab(k){
+  currentTab = k;
+  document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active', el.id==='tab-'+k));
+  initNav();
+  if(k==='calculator') renderCalc();
+}
+function toggleMenu(){
+  const m = document.getElementById('mobile-menu');
+  const h = document.getElementById('hamburger');
+  const open = m.style.display === 'block';
+  m.style.display = open ? 'none' : 'block';
+  h.textContent   = open ? '☰' : '✕';
+}
+
+// ── Materials ─────────────────────────────────────────────────
+function saveMaterial(){
+  const name  = document.getElementById('m-name').value.trim();
+  const unit  = document.getElementById('m-unit').value;
+  const price = parseFloat(document.getElementById('m-price').value);
+  const stock = parseFloat(document.getElementById('m-stock').value);
+  const err   = document.getElementById('mat-err');
+  if(!name || isNaN(price) || isNaN(stock)){ err.textContent='Completa todos los campos.'; return; }
+  err.textContent = '';
+  if(matEditing){
+    materials = materials.map(m => m.id===matEditing ? {...m,name,unit,price,stock} : m);
+    addLog('✏️ Editó material', name); matEditing = null;
+    document.getElementById('mat-form-title').textContent = '➕ Nuevo Material';
+    document.querySelector('#tab-inventory .btn-p').textContent = 'Agregar';
+    document.getElementById('mat-cancel').style.display = 'none';
+  } else {
+    materials.push({id:uid(),name,unit,price,stock});
+    addLog('➕ Agregó material', name);
+  }
+  save(); clearMatForm(); renderMaterials(); renderIngSelect(); renderCalcSelect();
+}
+function editMaterial(id){
+  const m = materials.find(x=>x.id===id); if(!m) return;
+  matEditing = id;
+  document.getElementById('m-name').value  = m.name;
+  document.getElementById('m-unit').value  = m.unit;
+  document.getElementById('m-price').value = m.price;
+  document.getElementById('m-stock').value = m.stock;
+  document.getElementById('mat-form-title').textContent = '✏️ Editar Material';
+  document.querySelector('#tab-inventory .btn-p').textContent = 'Guardar';
+  document.getElementById('mat-cancel').style.display = 'inline-block';
+}
+function deleteMaterial(id){
+  const m = materials.find(x=>x.id===id);
+  materials = materials.filter(x=>x.id!==id);
+  addLog('🗑️ Eliminó material', m?.name||id);
+  if(matEditing===id) cancelMat();
+  save(); renderMaterials(); renderIngSelect(); renderCalcSelect();
+}
+function cancelMat(){
+  matEditing=null; clearMatForm();
+  document.getElementById('mat-form-title').textContent='➕ Nuevo Material';
+  document.querySelector('#tab-inventory .btn-p').textContent='Agregar';
+  document.getElementById('mat-cancel').style.display='none';
+  document.getElementById('mat-err').textContent='';
+}
+function clearMatForm(){
+  ['m-name','m-price','m-stock'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-unit').value='kg';
+}
+function renderMaterials(){
+  const el    = document.getElementById('mat-list');
+  const title = document.getElementById('mat-list-title');
+  const stats = document.getElementById('mat-stats');
+  title.textContent = `📋 Materiales (${materials.length})`;
+  if(!materials.length){ el.innerHTML='<div class="empty">Sin materiales. Agrega tu primera materia prima 🍓</div>'; stats.style.display='none'; return; }
+  const isMob = window.innerWidth < 700;
+  if(isMob){
+    el.innerHTML = materials.map(m=>`
+      <div style="background:rgba(255,182,193,0.2);border-radius:10px;padding:12px 14px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-weight:700;color:var(--dark)">${m.name}</div>
+            <div style="color:var(--mid);font-size:13px">${fmt(m.price)}/${m.unit} · stock: ${m.stock} ${m.unit}</div>
+            <div style="color:var(--acc);font-weight:700;font-size:13px">Valor: ${fmt(m.price*m.stock)}</div>
+          </div>
+          <div><button class="btn-icon" onclick="editMaterial('${m.id}')">✏️</button><button class="btn-icon" style="color:#e11d48" onclick="deleteMaterial('${m.id}')">🗑️</button></div>
+        </div>
+      </div>`).join('');
+  } else {
+    el.innerHTML = `<div class="ovx"><table><thead><tr><th>Material</th><th>Unidad</th><th>Precio/u</th><th>Stock</th><th>Valor total</th><th></th></tr></thead><tbody>`
+      + materials.map((m,i)=>`<tr style="background:${i%2===0?'rgba(255,182,193,0.15)':'transparent'}">
+          <td><strong>${m.name}</strong></td><td>${m.unit}</td><td>${fmt(m.price)}</td><td>${m.stock} ${m.unit}</td>
+          <td style="color:var(--acc);font-weight:700">${fmt(m.price*m.stock)}</td>
+          <td><button class="btn-icon" onclick="editMaterial('${m.id}')">✏️</button><button class="btn-icon" style="color:#e11d48" onclick="deleteMaterial('${m.id}')">🗑️</button></td>
+        </tr>`).join('')
+      + `</tbody></table></div>`;
+  }
+  const totalVal = materials.reduce((s,m)=>s+m.price*m.stock,0);
+  const costliest = materials.reduce((a,b)=>a.price>b.price?a:b);
+  stats.style.display='grid';
+  stats.innerHTML = `
+    <div class="stat-box"><div class="stat-lbl">Materiales</div><div class="stat-val">${materials.length}</div></div>
+    <div class="stat-box"><div class="stat-lbl">Valor inventario</div><div class="stat-val" style="color:var(--acc)">${fmt(totalVal)}</div></div>
+    <div class="stat-box"><div class="stat-lbl">Más costoso</div><div class="stat-val" style="font-size:15px">${costliest.name}</div></div>`;
+}
+
+// ── Ingredients ───────────────────────────────────────────────
+function renderIngSelect(){
+  const sel = document.getElementById('ing-mat');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— Material —</option>'
+    + materials.map(m=>`<option value="${m.id}"${m.id===cur?' selected':''}>${m.name} (${m.unit})</option>`).join('');
+}
+function addIngredient(){
+  const mid = document.getElementById('ing-mat').value;
+  const qty = parseFloat(document.getElementById('ing-qty').value);
+  if(!mid || isNaN(qty) || qty<=0) return;
+  const exists = prodIngredients.find(i=>i.materialId===mid);
+  if(exists) exists.quantity=qty;
+  else prodIngredients.push({materialId:mid, quantity:qty});
+  document.getElementById('ing-qty').value='';
+  document.getElementById('ing-mat').value='';
+  renderIngList();
+}
+function removeIngredient(mid){
+  prodIngredients = prodIngredients.filter(i=>i.materialId!==mid);
+  renderIngList();
+}
+function renderIngList(){
+  const el = document.getElementById('ing-list');
+  if(!prodIngredients.length){ el.innerHTML=''; return; }
+  const totalCost = prodIngredients.reduce((s,ing)=>{ const m=materials.find(x=>x.id===ing.materialId); return s+(m?m.price*ing.quantity:0); },0);
+  el.innerHTML = prodIngredients.map(ing=>{
+    const m = materials.find(x=>x.id===ing.materialId); if(!m) return '';
+    return `<div class="ing-row">
+      <span style="color:var(--dark);font-weight:600">${m.name} · ${ing.quantity} ${m.unit}</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="color:var(--acc);font-weight:700">${fmt(m.price*ing.quantity)}</span>
+        <button class="btn-icon" style="color:#e11d48" onclick="removeIngredient('${ing.materialId}')">✕</button>
+      </div>
+    </div>`;
+  }).join('') + `<div style="text-align:right;color:var(--acc);font-weight:700;font-size:15px;padding-right:4px">Costo: ${fmt(totalCost)}</div>`;
+}
+
+// ── Products ──────────────────────────────────────────────────
+function saveProduct(){
+  const name   = document.getElementById('p-name').value.trim();
+  const margin = parseFloat(document.getElementById('p-margin').value);
+  const err    = document.getElementById('prod-err');
+  if(!name){ err.textContent='Ingresa el nombre del producto.'; return; }
+  if(!prodIngredients.length){ err.textContent='Agrega al menos un ingrediente.'; return; }
+  err.textContent='';
+  if(prodEditing){
+    products = products.map(p=>p.id===prodEditing ? {...p,name,margin,ingredients:[...prodIngredients]} : p);
+    addLog('✏️ Editó producto', name); prodEditing=null;
+    document.getElementById('prod-form-title').textContent='➕ Nuevo Producto';
+    document.querySelector('#tab-products .btn-p').textContent='Crear producto';
+    document.getElementById('prod-cancel').style.display='none';
+  } else {
+    products.push({id:uid(),name,margin,ingredients:[...prodIngredients]});
+    addLog('➕ Creó producto', name);
+  }
+  save(); clearProdForm(); renderProducts(); renderCalcSelect();
+}
+function editProduct(id){
+  const p = products.find(x=>x.id===id); if(!p) return;
+  prodEditing = id;
+  prodIngredients = [...p.ingredients];
+  document.getElementById('p-name').value   = p.name;
+  document.getElementById('p-margin').value = p.margin;
+  document.getElementById('prod-form-title').textContent='✏️ Editar Producto';
+  document.querySelector('#tab-products .btn-p').textContent='Guardar';
+  document.getElementById('prod-cancel').style.display='inline-block';
+  renderIngList();
+}
+function deleteProduct(id){
+  const p = products.find(x=>x.id===id);
+  products = products.filter(x=>x.id!==id);
+  addLog('🗑️ Eliminó producto', p?.name||id);
+  if(prodEditing===id) cancelProd();
+  save(); renderProducts(); renderCalcSelect();
+}
+function cancelProd(){
+  prodEditing=null; clearProdForm();
+  document.getElementById('prod-form-title').textContent='➕ Nuevo Producto';
+  document.querySelector('#tab-products .btn-p').textContent='Crear producto';
+  document.getElementById('prod-cancel').style.display='none';
+  document.getElementById('prod-err').textContent='';
+}
+function clearProdForm(){
+  document.getElementById('p-name').value='';
+  document.getElementById('p-margin').value='30';
+  prodIngredients=[];
+  document.getElementById('ing-list').innerHTML='';
+}
+function renderProducts(){
+  const el    = document.getElementById('prod-list');
+  const title = document.getElementById('prod-list-title');
+  title.textContent=`🍓 Productos (${products.length})`;
+  if(!products.length){ el.innerHTML='<div class="empty">Sin productos. Crea tu primer producto 🍓</div>'; return; }
+  el.innerHTML = products.map(p=>{
+    const cost = p.ingredients.reduce((s,ing)=>{ const m=materials.find(x=>x.id===ing.materialId); return s+(m?m.price*ing.quantity:0); },0);
+    const sale = cost/(1-p.margin/100);
+    return `<div style="background:rgba(255,192,203,0.2);border-radius:12px;padding:14px 16px;border:1px solid var(--border);margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-weight:700;font-size:16px;color:var(--dark)">${p.name}</div>
+          <div style="color:var(--mid);font-size:12px">${p.ingredients.length} ingrediente(s)</div>
+        </div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+          <div style="text-align:center"><div style="color:var(--soft);font-size:10px">COSTO</div><div style="font-weight:700;font-size:14px">${fmt(cost)}</div></div>
+          <div style="text-align:center"><div style="color:var(--soft);font-size:10px">MARGEN</div><div style="font-weight:700;font-size:14px;color:var(--acc)">${p.margin}%</div></div>
+          <div style="text-align:center"><div style="color:var(--soft);font-size:10px">VENTA</div><div style="font-weight:700;font-size:14px;color:#be123c">${fmt(sale)}</div></div>
+          <div>
+            <button class="btn-icon" onclick="editProduct('${p.id}')">✏️</button>
+            <button class="btn-icon" style="color:#e11d48" onclick="deleteProduct('${p.id}')">🗑️</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Calculator ────────────────────────────────────────────────
+function renderCalcSelect(){
+  const sel = document.getElementById('calc-prod');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— Selecciona un producto —</option>'
+    + products.map(p=>`<option value="${p.id}"${p.id===cur?' selected':''}>${p.name}</option>`).join('');
+  renderCalc();
+}
+function renderCalc(){
+  const pid = document.getElementById('calc-prod').value;
+  const qty = parseFloat(document.getElementById('calc-qty').value)||1;
+  const el  = document.getElementById('calc-result');
+  const p   = products.find(x=>x.id===pid);
+  if(!p){ el.innerHTML=`<div class="card" style="text-align:center;padding:48px 20px"><div style="font-size:48px;margin-bottom:12px">🍓</div><div style="color:var(--mid)">Selecciona un producto para ver el análisis de costos</div></div>`; return; }
+  let costUnit=0;
+  const rows = p.ingredients.map(ing=>{ const m=materials.find(x=>x.id===ing.materialId); if(!m) return null; const lt=m.price*ing.quantity; costUnit+=lt; return {name:m.name,unit:m.unit,quantity:ing.quantity,price:m.price,lt}; }).filter(Boolean);
+  const sale  = costUnit/(1-p.margin/100);
+  const profit= sale-costUnit;
+  const isMob = window.innerWidth<700;
+  let tableHtml='';
+  if(isMob){
+    tableHtml = rows.map(r=>`<div style="background:rgba(255,182,193,0.2);border-radius:8px;padding:10px 12px;margin-bottom:6px">
+      <div style="font-weight:600;color:var(--dark)">${r.name}</div>
+      <div style="color:var(--mid);font-size:13px">${r.quantity} ${r.unit}/u · ${fmt(r.price)}/u · ×${qty}</div>
+      <div style="color:var(--acc);font-weight:700">${fmt(r.lt*qty)}</div>
+    </div>`).join('') + `<div style="text-align:right;color:var(--acc);font-weight:700;font-size:15px;padding-top:6px">Costo total: ${fmt(costUnit*qty)}</div>`;
+  } else {
+    tableHtml = `<div class="ovx"><table><thead><tr><th>Ingrediente</th><th>Cant/u</th><th>Cant total</th><th>Precio/u</th><th>Subtotal</th></tr></thead><tbody>`
+      + rows.map((r,i)=>`<tr style="background:${i%2===0?'rgba(255,182,193,0.15)':'transparent'}"><td>${r.name}</td><td>${r.quantity} ${r.unit}</td><td>${(r.quantity*qty).toFixed(3)} ${r.unit}</td><td>${fmt(r.price)}</td><td style="color:var(--acc);font-weight:600">${fmt(r.lt*qty)}</td></tr>`).join('')
+      + `</tbody><tfoot><tr style="border-top:2px solid var(--border)"><td colspan="4" style="text-align:right;font-weight:700">Costo total:</td><td style="color:var(--acc);font-weight:700;font-size:15px">${fmt(costUnit*qty)}</td></tr></tfoot></table></div>`;
+  }
+  el.innerHTML = `
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-lbl">Costo/u</div><div class="stat-val" style="color:#db2777">${fmt(costUnit)}</div></div>
+      <div class="stat-box"><div class="stat-lbl">Venta/u</div><div class="stat-val" style="color:#be123c">${fmt(sale)}</div></div>
+      <div class="stat-box"><div class="stat-lbl">Ganancia total</div><div class="stat-val" style="color:#9d174d">${fmt(profit*qty)}</div></div>
+      <div class="stat-box"><div class="stat-lbl">Ingreso total</div><div class="stat-val" style="color:#831843">${fmt(sale*qty)}</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 Desglose · ${qty} unidad(es)</div>
+      ${tableHtml}
+    </div>
+    <div class="card">
+      <div class="card-title">💡 Composición del precio</div>
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:4px">
+          <span style="color:var(--mid);font-size:13px">Costo de producción</span>
+          <span style="color:#f9a8d4;font-weight:700">${fmt(costUnit)} (${(100-p.margin).toFixed(1)}%)</span>
+        </div>
+        <div class="bar-bg"><div class="bar-fill" style="width:${100-p.margin}%;background:#f9a8d4"></div></div>
+      </div>
+      <div style="margin-top:12px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:4px">
+          <span style="color:var(--mid);font-size:13px">Ganancia (${p.margin}%)</span>
+          <span style="color:#be123c;font-weight:700">${fmt(profit)} (${p.margin.toFixed(1)}%)</span>
+        </div>
+        <div class="bar-bg"><div class="bar-fill" style="width:${p.margin}%;background:#be123c"></div></div>
+      </div>
+      <div class="price-box">
+        <div style="color:var(--mid);font-size:12px;font-weight:700;letter-spacing:1px">🍓 PRECIO SUGERIDO</div>
+        <div class="price-big">${fmt(sale)}</div>
+        <div style="color:var(--soft);font-size:12px;margin-top:4px">por unidad · margen ${p.margin}%</div>
+      </div>
+    </div>`;
+}
+
+// ── Log ───────────────────────────────────────────────────────
+function renderLog(){
+  const el    = document.getElementById('log-list');
+  const title = document.getElementById('log-title');
+  title.textContent=`Historial (${log.length} eventos)`;
+  if(!log.length){ el.innerHTML='<div class="empty">Sin actividad registrada todavía 🍓</div>'; return; }
+  el.innerHTML = log.map(e=>`
+    <div style="background:rgba(255,192,203,0.15);border-radius:10px;padding:12px 14px;border:1px solid var(--border);margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:flex-start">
+        <div>
+          <span style="color:var(--dark);font-weight:700;font-size:14px">${e.action}</span>
+          <span style="color:var(--mid);font-size:13px;margin-left:6px">${e.detail}</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+          <span class="tag">🍓 ${e.user}</span>
+          <span style="color:var(--soft);font-size:12px">${e.time}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ── Init ──────────────────────────────────────────────────────
+function renderAll(){ renderMaterials(); renderIngSelect(); renderProducts(); renderCalcSelect(); renderLog(); }
+
+load();
+if(username){
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('hdr-user').textContent=username;
+  initNav(); renderAll();
+} else {
+  document.getElementById('screen-login').style.display='flex';
+}
+
+window.addEventListener('resize', ()=>{ renderMaterials(); renderProducts(); if(currentTab==='calculator') renderCalc(); });
+</script>
+</body>
+</html>
